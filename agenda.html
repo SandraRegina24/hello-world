@@ -1,0 +1,129 @@
+<!doctype html>
+<html>
+	<head>
+		<title>Agenda</title>
+		<script>
+			var dados;
+			var vetornomes;
+			var vetortelefones;
+			var vetorenderecos;
+			var x=0;
+			
+			function criarobjetoxml(){	
+				var obj=false;
+				if(window.XMLHttpRequest){
+					obj = new XMLHttpRequest();
+				}
+				else if(window.ActiveXObject){
+					obj = new ActiveXObject("Msxm12.XMLHTTP");
+				};
+				if(obj){
+					obj.onreadystatechange = function(){
+						if(obj.readyState == 4 && (obj.status == 200 || obj.status == 304)){
+							receberdados(obj);
+						}};
+					obj.open("GET", "agenda.xml", true);
+					obj.send();
+				};
+				return false;
+			};
+			
+			function receberdados(conteudoxml){
+				dados = conteudoxml.responseXML;
+				vetornomes = dados.getElementsByTagName("NOME");
+				vetortelefones = dados.getElementsByTagName("TELEFONE");
+				vetorenderecos = dados.getElementsByTagName("ENDERECO");
+				criartabela();
+				return false;
+			};
+			
+			function criartabela(){
+				for(x=0; x<vetornomes.length; x++){
+					var tabela = document.getElementById("tb");
+					var linha = document.createElement("tr");
+					var coluna1 = document.createElement("td");
+					var coluna2 = document.createElement("td");
+					var coluna3 = document.createElement("td");
+					var coluna4 = document.createElement("td");
+					var nome = document.createTextNode(vetornomes[x].firstChild.nodeValue);
+					var telefone = document.createTextNode(vetortelefones[x].firstChild.nodeValue);
+					var endereco = document.createTextNode(vetorenderecos[x].firstChild.nodeValue);
+					var buttonremover = document.createElement("button");
+					var labelbotao = document.createTextNode("X");
+					
+					buttonremover.setAttribute("onclick", "return remover(this)");
+					
+					buttonremover.appendChild(labelbotao);
+					coluna1.appendChild(nome);
+					coluna2.appendChild(telefone);
+					coluna3.appendChild(endereco);
+					coluna4.appendChild(buttonremover);
+					linha.appendChild(coluna1);
+					linha.appendChild(coluna2);
+					linha.appendChild(coluna3);
+					linha.appendChild(coluna4);
+					tabela.appendChild(linha);
+				};
+				return false;
+			};
+			function remover(elemento)
+			{
+				var coluna = elemento.parentNode;
+				var linha = coluna.parentNode;
+				tb.removeChild(linha);
+				return false;
+			}
+			function adicionar()
+			{
+					var tabela = document.getElementById("tb");
+					var linha = document.createElement("tr");
+					var coluna1 = document.createElement("td");
+					var coluna2 = document.createElement("td");
+					var coluna3 = document.createElement("td");
+					var coluna4 = document.createElement("td");
+					var nomenovo = document.createTextNode(document.getElementById("inputnome").value);
+					var telefonenovo = document.createTextNode(document.getElementById("inputtelefone").value);
+					var endereconovo = document.createTextNode(document.getElementById("inputendereco").value);
+					var buttonremover = document.createElement("button");
+					var labelbotao = document.createTextNode("X");
+					
+					buttonremover.setAttribute("onclick", "return remover(this)");
+					
+					buttonremover.appendChild(labelbotao);
+					coluna1.appendChild(nomenovo);
+					coluna2.appendChild(telefonenovo);
+					coluna3.appendChild(endereconovo);
+					coluna4.appendChild(buttonremover);
+					linha.appendChild(coluna1);
+					linha.appendChild(coluna2);
+					linha.appendChild(coluna3);
+					linha.appendChild(coluna4);
+					tabela.appendChild(linha);
+			};
+		</script>
+	</head>
+	<body onload="return criarobjetoxml()">
+		<h1>AGENDA</h1>
+		<br>
+		<label>Nome:</label>
+		<input type="text" id="inputnome">
+		<label>Telefone:</label>
+		<input type="text" id="inputtelefone">
+		<label>Endereco:</label>
+		<input type="text" id="inputendereco">
+		<button onclick="adicionar()" id="buttonadicionar">Adicionar</button>
+		<br>		
+		<br>
+		<table id="tabela">
+			<thead>
+				<tr>
+					<th>Nome</th>
+					<th>Telefone</th>
+					<th>Endereco</th>
+					<th>Remover</th>
+				</tr>
+			</thead>
+			<tbody id="tb"></tbody>
+		</table>
+	</body>
+</html>
